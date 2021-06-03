@@ -46,6 +46,7 @@ namespace FileLoader
                 if (File.Exists(destinationPathName))
                 {
                     File.Delete(destinationPathName);
+
                 }
                 file.ExtractToFile(destinationPathName);
                 return destinationPathName;
