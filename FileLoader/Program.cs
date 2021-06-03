@@ -37,7 +37,7 @@ namespace FileLoader
             string destinationPathName = "";
             string zipPath = path;
             var file = System.IO.Compression.ZipFile.OpenRead(zipPath)
-              .Entries.Where(x => x.Name.EndsWith(".dat",
+              .Entries.Where(x => x.Name.EndsWith(".txt",
                                            StringComparison.InvariantCulture))
               .FirstOrDefault();
             if (file != null)
