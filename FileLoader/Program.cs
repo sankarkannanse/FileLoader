@@ -18,7 +18,7 @@ namespace FileLoader
         public static string MappingCSV = @"C:\Users\ksank\Downloads\loadfile.csv";
         public static string MappingFile = @"C:\Users\ksank\source\repos\FileLoader\FileLoader\MetaDoc.xml";
         static List<string> FieldNames = new List<string>();
-
+//added comments
         static void Main(string[] args)
         {
             //string row = "sank sank sang kuma India India Pakis China";
