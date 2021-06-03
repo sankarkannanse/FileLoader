@@ -42,7 +42,7 @@ namespace FileLoader
               .FirstOrDefault();
             if (file != null)
             {
-                destinationPathName = sPath + file.Name;
+                destinationPathName = sPath + file.Name; ;
                 if (File.Exists(destinationPathName))
                 {
                     File.Delete(destinationPathName);
