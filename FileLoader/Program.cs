@@ -15,7 +15,7 @@ namespace FileLoader
 {
     class Program
     {
-        public static string MappingCSV = @"C:\Users\ksank\Downloads\loadfile.csv";
+        public static string MappingCSV = @"C:\Users\ksank\Downloads\loadfile.csv", inputArchive, outputFile, logFile, metadocVersion, inputFile;
         public static string MappingFile = @"C:\Users\ksank\source\repos\FileLoader\FileLoader\MetaDoc.xml";
         static List<string> FieldNames = new List<string>();
 //added comments
@@ -23,12 +23,76 @@ namespace FileLoader
         {
             //string row = "sank sank sang kuma India India Pakis China";
             //Console.WriteLine(row);
+            StartUp();
+            //Console.WriteLine(ReadZipFile(@"E:\Fld.zip"));
 
-            Console.WriteLine(ReadZipFile(@"E:\Fld.zip"));
-
-            string inputFilePath = ReadZipFile(@"E:\Fld.zip");
+           // string inputFilePath = ReadZipFile(@"E:\Fld.zip");
         }
         //static string destinationFolder = @"C:\temp";
+
+        private static bool StartUp()
+        {
+            try
+            {
+                string userName = Environment.MachineName.Substring(4);
+                if (true)
+                {
+                    inputArchive = @"..\..\App_Data\TestData.zip";
+
+                    outputFile = $@"C:\Users\{userName}\Downloads\outputFile.dat";
+
+                    logFile = $@"C:\Users\{userName}\Downloads\logFile.txt";
+                    metadocVersion = "14";
+                }
+                else
+                {
+                    inputArchive = Environment.GetEnvironmentVariable("inputFile");
+                    outputFile = Environment.GetEnvironmentVariable("outputFile");
+                    logFile = Environment.GetEnvironmentVariable("logFile");
+                    metadocVersion = Environment.GetEnvironmentVariable("metadocVersion");
+                }
+
+                if (string.IsNullOrEmpty(logFile)) throw new Exception("Please provide path to logFile file");
+                if (string.IsNullOrEmpty(inputArchive)) throw new Exception("Please provide path to input ZipFolder");
+                if (string.IsNullOrEmpty(outputFile)) throw new Exception("Please provide path to output file");
+                if (string.IsNullOrEmpty(metadocVersion)) throw new Exception("Please provide path to metadocVersion file");
+                inputFile = ExtractFileFromZipFolder(inputArchive);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //PreloaderUtil.LogAnError("Start Up Failure: " + ex.Message, logFile);
+                return false;
+            }
+        }
+
+
+        public static string ExtractFileFromZipFolder(string path)
+        {
+            String sPath = path;
+            //if (!sPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+            //    sPath += Path.DirectorySeparatorChar;
+            string destinationPathName = "";
+            string zipPath = path;
+            var file = System.IO.Compression.ZipFile.OpenRead(zipPath)
+                .Entries.Where(x => x.Name.EndsWith(".txt", StringComparison.InvariantCulture)).FirstOrDefault();
+            if (file != null)
+            {
+                destinationPathName = Path.Combine(@"..\..\App_Data\", file.Name);
+                if (File.Exists(destinationPathName))
+                {
+                    File.Delete(destinationPathName);
+                }
+                file.ExtractToFile(destinationPathName);
+                destinationPathName = Path.GetFullPath(destinationPathName);
+
+                return destinationPathName;
+            }
+            else
+            {
+                throw new Exception("File not exist");
+            }
+        }
         static string ReadZipFile(string path)
         {
             String sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="App_Data\TestData.zip" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
