@@ -37,7 +37,8 @@ namespace FileLoader
                 string userName = Environment.MachineName.Substring(4);
                 if (true)
                 {
-                    inputArchive = @"..\..\App_Data\TestData.zip";
+                    // inputArchive = @"..\..\App_Data\TestData.zip";
+                    inputArchive = @"C:\Users\ksank\source\repos\FileLoader\FileLoader\App_Data\TestData\TestData\Fld\a\b\c\c\loadfile.dat";
 
                     outputFile = $@"C:\Users\{userName}\Downloads\outputFile.dat";
 
@@ -56,7 +57,8 @@ namespace FileLoader
                 if (string.IsNullOrEmpty(inputArchive)) throw new Exception("Please provide path to input ZipFolder");
                 if (string.IsNullOrEmpty(outputFile)) throw new Exception("Please provide path to output file");
                 if (string.IsNullOrEmpty(metadocVersion)) throw new Exception("Please provide path to metadocVersion file");
-                inputFile = ExtractFileFromZipFolder(inputArchive);
+               // ExtractFileFromZipFolder(inputArchive);
+                ProcessDuplicates(inputArchive);
                 return true;
             }
             catch (Exception ex)
@@ -67,6 +69,7 @@ namespace FileLoader
         }
 
 
+      
         public static string ExtractFileFromZipFolder(string path)
         {
             String sPath = path;
@@ -75,7 +78,21 @@ namespace FileLoader
             string destinationPathName = "";
             string zipPath = path;
             var file = System.IO.Compression.ZipFile.OpenRead(zipPath)
-                .Entries.Where(x => x.Name.EndsWith(".txt", StringComparison.InvariantCulture)).FirstOrDefault();
+                .Entries.Where(x => x.Name.EndsWith(".dat", StringComparison.InvariantCulture)).FirstOrDefault();
+
+            List<string> fileLines = new List<string>();
+         
+            var filedata = System.IO.Compression.ZipFile.OpenRead(zipPath)
+                .Entries.Where(x => x.Name.EndsWith(".dat", StringComparison.InvariantCulture)).FirstOrDefault().Open();
+            using (StreamReader sr = new StreamReader(filedata))
+            {
+                while (!sr.EndOfStream)
+                {
+                    fileLines.Add(sr.ReadLine());
+                }
+
+            }
+            string[] source = fileLines.ToArray();
             if (file != null)
             {
                 destinationPathName = Path.Combine(@"..\..\App_Data\", file.Name);
@@ -92,36 +109,6 @@ namespace FileLoader
             {
                 throw new Exception("File not exist");
             }
-        }
-        static string ReadZipFile(string path)
-        {
-            String sPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            if (!sPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
-                sPath += Path.DirectorySeparatorChar;
-            string destinationPathName = "";
-            string zipPath = path;
-            var file = System.IO.Compression.ZipFile.OpenRead(zipPath)
-              .Entries.Where(x => x.Name.EndsWith(".txt",
-                                           StringComparison.InvariantCulture))
-              .FirstOrDefault();
-            if (file != null)
-            {
-                destinationPathName = sPath + file.Name; ;
-                if (File.Exists(destinationPathName))
-                {
-                    File.Delete(destinationPathName);
-
-                }
-                file.ExtractToFile(destinationPathName);
-                return destinationPathName;
-            }
-            else
-            {
-                throw new Exception("File not exist");
-            }
-
-
-
         }
 
         public static List<Field> GetFields()
@@ -187,9 +174,34 @@ namespace FileLoader
             xDoc.Save(MappingFile);
         }
 
-        private static void ProcessDuplicates(string filepathcsv)
+        private static void ProcessDuplicates(string zipFilePath)
         {
-            string[] source = File.ReadAllLines(filepathcsv);
+            string[] source;
+            List<string> fileLines = new List<string>();
+
+            string fileExt =
+       System.IO.Path.GetExtension(zipFilePath);
+            if (fileExt == ".zip")
+            {
+                var filedata = System.IO.Compression.ZipFile.OpenRead(zipFilePath)
+               .Entries.Where(x => x.Name.EndsWith(".dat", StringComparison.InvariantCulture)).FirstOrDefault().Open();
+
+                using (StreamReader sr = new StreamReader(filedata))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        fileLines.Add(sr.ReadLine());
+                    }
+
+                }
+                source = fileLines.ToArray();
+            }
+            else
+            {
+                source = File.ReadAllLines(zipFilePath);
+            }
+          
+          
             string cryptId = string.Empty;
             var fieldsToBeEncrypted = new Dictionary<string, string>(){
                 {"METADOC-MLSET-TYP-DESC", "GenericText_Internal"},

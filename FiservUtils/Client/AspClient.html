@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  0 ab 
+
+|    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript">
+        var encryptKey = "sblw-3hn8-sqoy19";
+        $(document).ready(function () {
+          //  alert("")
+         //   Getdet("ddd", "sblw-3hn8-sqoy19");
+            var TextBox1 = $("#btnEncrypt");
+            TextBox1.click(function (e) //calling Jquery function on Textbox change event
+            {
+                var Name = TextBox1.val(); //getting the value from text box
+                if (Name != -1) {
+                    Getdet(Name, encryptKey ); //ing the Input parameter to javascript method Named Getdet from user with the help of text box by Name variable.
+                }
+            });
+        });
+
+        function Getdet(Name,key) {
+           // alert(Name)
+            //  var datas = { content: "India", encryptKey: "Nation" };
+            var dd = "{'Custname':'" + Name + "','key':'" + key+"'}";
+            debugger
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44335/SecurityService.asmx/Encrpty", // add web service Name and web service Method Name
+                data: dd,//"{'Custname':'" + Name + "{'key':'" + key +"'}",  //web Service method Parameter Name and ,user Input value which in Name Variable.
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    debugger
+                 //   alert(response)
+                    $("#lblPassword").html(response.d); //getting the Response from JSON
+                },
+                failure: function (msg) {
+                    alert(msg);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div><label>Password</label><input type="text" /><input type="button" id="btnEncrypt" value="Encrypt" /></div>
+    <div><label>Encrypted Password: </label><span id="lblPassword" ></span></div>
+
+
+</body>
+</html>
